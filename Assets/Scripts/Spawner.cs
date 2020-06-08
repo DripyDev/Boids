@@ -26,10 +26,4 @@ public class Spawner : MonoBehaviour
             todosBoids[i].todosBoids = todosBoids;
         }
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

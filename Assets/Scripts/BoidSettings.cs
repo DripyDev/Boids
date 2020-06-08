@@ -14,5 +14,9 @@ public class BoidSettings : ScriptableObject {
     public float pesoSeparacion = 1f;
     public float pesoAlineacion = 1f;
 
-    public float radioPercepcion = 5f;
+    public float pesoEvitarChoque = 10f;
+
+    public float radioPercepcion = 2.5f;
+    public float dstSeparacion = 5f;
+    public LayerMask mascaraObstaculos;
 }
