@@ -18,6 +18,10 @@ public class Spawner : MonoBehaviour
             var boid = Instantiate(prefab);
             //boid.transform.position = posRandom;
             boid.Inicializar(settings, posRandom);
+
+            boid.transform.position = posRandom;
+            boid.transform.forward = Random.insideUnitSphere;
+
             boid.numeroBoids = numeroBoids;
             todosBoids.Add(boid);
         }

@@ -14,7 +14,7 @@ public class Boid : MonoBehaviour
     public int numeroBoids;
     public List<Boid> todosBoids;
     public List<Boid> manada;
-    //TEMPORAL. BORRAR MAS TARDE
+    //Temporal para gizmos
     public Vector3 r1,r2,r3;
     
     //Inicializamos el Boid
@@ -24,7 +24,7 @@ public class Boid : MonoBehaviour
         //Direccion inicial: adelante
         direccion = transform.forward;
         //Velocidad de movimiento inicial
-        speed = (settings.maxSpeed+settings.minSpeed)/2;
+        speed = Random.Range(settings.maxSpeed, settings.minSpeed);
         //Velocidad inicial
         velocidad = direccion*speed;
     }
@@ -52,6 +52,8 @@ public class Boid : MonoBehaviour
     ///<summary>R1. Devuelve el vector entre nosotros y el centro de la manada</summary>
     Vector3 Cohesion(List<Boid> manada){
         Vector3 pC = new Vector3(0,0,0);
+        if(manada.Count == 0)
+            return pC;
         foreach (var b in manada) {
             pC += b.transform.position;
         }
@@ -59,8 +61,11 @@ public class Boid : MonoBehaviour
         pC = (manada.Count) > 1? pC/manada.Count : pC;
         return (pC-this.transform.position)*settings.pesoCohesion;
     }
+    ///<summary>R2. Devuelve el vector sumatorio entre nosotros y los boids demasiado cercanos a nosotros. Lo develve en negativo</summary>
     Vector3 Separacion(List<Boid> manada){
         Vector3 c = new Vector3(0,0,0);
+        if(manada.Count == 0)
+            return c;
         foreach (var b in manada) {
             if(Distancia(b.transform.position, this.transform.position) < settings.dstSeparacion){
                 c-= b.transform.position - this.transform.position;
@@ -68,9 +73,12 @@ public class Boid : MonoBehaviour
         }
         return c*settings.pesoSeparacion;
     }
-
+    ///<summary>R3. Devuelve el vector entre nosotros la direccion general de la manada.
+    ///NOTA: De momento iguala la velocidad, pero creo que deberia de igualar la direccion</summary>
     Vector3 Alineacion(List<Boid> manada){
         Vector3 pV = new Vector3(0,0,0);
+        if(manada.Count == 0)
+            return pV;
         foreach (var b in manada) {
             pV += b.velocidad;
         }
@@ -88,82 +96,81 @@ public class Boid : MonoBehaviour
         //Vector3 r1,r2,r3;
         r1 = Cohesion(manada);//Bien
         r2 = Separacion(manada);//Bien
-        r3 = Alineacion(manada);//?¿?¿
+        r3 = Alineacion(manada);//Bien
         
         Vector3 col = new Vector3(0,0,0);
         if(Colision()){
             col =  ObstacleRays () * settings.pesoEvitarChoque;
         }
         //print("r1: " + r1 + " r2: " + r2 + " r3: " + r3 + " col: " + col);
-        if(col != new Vector3(0,0,0)){
-            //print("COL DIFERENTE DE 0: " + col);
-        }
         var aceleracion = (r1+r2+r3+col);
         velocidad += aceleracion;
-        //velocidad += r1+r2+r3+col;
         
         //Actualizamos las nuevas direccion y velocidad
-        var auxSpeed = velocidad.magnitude;
-        Vector3 auxDir = velocidad/auxSpeed;
+        speed = velocidad.magnitude;
+        Vector3 auxDir = velocidad/speed;
         //Nueva velocidad
-        speed = Mathf.Clamp (auxSpeed, settings.minSpeed, settings.maxSpeed);
+        speed = Mathf.Clamp (speed, settings.minSpeed, settings.maxSpeed);
         velocidad = auxDir*speed;
         direccion = auxDir;
 
+        //IMPORTANTE: ESTO ACTUALIZA LOS EJES DEL BOID, SI NO LO ACTUALIZAMOS, EL RAYCASTING NO VA A FUNCIONAR BIEN
+        transform.forward = direccion;
         transform.position += velocidad * Time.deltaTime;
     }
 
-    //NOTA: VA MAL LO DE LOS OBSTACULOS Y RAYOS, REPASAR
     ///<summary>Comprobamos con un rayo si vamos a chocarnos o no con algun obstaculo</summary>
     public bool Colision(){
         RaycastHit hit;
         float speed = velocidad.magnitude;
         Vector3 dir = velocidad / speed;
-        //if (Physics.SphereCast (transform.position, settings.radioPercepcion, dir, out hit, settings.dstSeparacion, settings.mascaraObstaculos)) {
-        if (Physics.SphereCast (transform.position, 0.27f, dir, out hit, settings.dstSeparacion, settings.mascaraObstaculos)) {
+        //origen, radio esfera, direccion, informacion hit, maxima distancia casteo, mascara de obstaculos
+        if (Physics.SphereCast (transform.position, 0.2f, direccion, out hit, settings.distanciaEvitarColision, settings.mascaraObstaculos))
             return true;
-        } else { }
-        return false;
+        else
+            return false;
     }
     public Ray rayo;
     ///<summary>Decidimos a donde nos movemos en funcion de los rayos casteados</summary>
     Vector3 ObstacleRays () {
+        //Vector con las direcciones de los rayos en funcion del numero aureo
         Vector3[] rayDirections = BoidHelper.directions;
-        //print("Long rayDirections" + rayDirections.Length);
         //Si un rayo NO golpea, nos movemos en esa direccion
         for (int i = 0; i < rayDirections.Length; i++) {
             Vector3 dir = this.transform.TransformDirection (rayDirections[i]);
-            //print("indice: " + i + " dir: " + dir);
             Ray ray = new Ray (transform.position, dir);
             //Devolvemos la direccion del primer rayo que no golpea un obstaculo
-            //if (!Physics.SphereCast (ray, settings.radioPercepcion, settings.dstSeparacion, settings.mascaraObstaculos)) {
-            if (!Physics.SphereCast (ray, 0.27f, settings.dstSeparacion, settings.mascaraObstaculos)) {
+            if (!Physics.SphereCast (ray, 0.2f, settings.distanciaEvitarColision, settings.mascaraObstaculos)) {
                 rayo = ray;
-                return dir;//*settings.pesoEvitarChoque;
+                return dir;
             }
         }
         //Si todos los rayos han golpeado, seguimos adelante (Si todos golpean, no tenemos escapatoria asi que da igual que hacer)
         return direccion;
     }
 
-    /*void OnDrawGizmos()
+    void OnDrawGizmos()
     {
-        // Draw a yellow sphere at the transform's position
-        Gizmos.color = Color.yellow;
-        Vector3[] rayDirections = BoidHelper.directions;
-        //Si un rayo NO golpea, nos movemos en esa direccion
-        for (int i = 0; i < rayDirections.Length; i++) {
-            Vector3 dir = transform.TransformDirection (rayDirections[i]);
-            Ray ray = new Ray (transform.position, dir);
-            Gizmos.DrawRay(transform.position, dir*10);
-            //Primer rayo que no golpea el obstaculo
-            //Origen rayo, radio esfera, direccion
-            if (!Physics.SphereCast (ray, settings.radioPercepcion/2, settings.radioSeparacion, settings.mascaraObstaculos)) {
-                Gizmos.color = Color.red;
+        //Gizmos.color = Color.red;
+        //Gizmos.DrawRay(rayo);
+        /*if(Colision()){
+            // Draw a yellow sphere at the transform's position
+            Gizmos.color = Color.yellow;
+            Vector3[] rayDirections = BoidHelper.directions;
+            //Si un rayo NO golpea, nos movemos en esa direccion
+            for (int i = 0; i < rayDirections.Length; i++) {
+                Vector3 dir = transform.TransformDirection (rayDirections[i]);
+                Ray ray = new Ray (transform.position, dir);
                 Gizmos.DrawRay(transform.position, dir*10);
+                //Primer rayo que no golpea el obstaculo
+                //Origen rayo, radio esfera, direccion
+                if (!Physics.SphereCast (ray, 0.27f, settings.dstSeparacion, settings.mascaraObstaculos)) {
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawRay(transform.position, dir*10);
+                }
             }
-        }
-    }*/
+        }*/
+    }
 
     void OnDrawGizmosSelected() {
         Gizmos.color = Color.magenta;
@@ -179,15 +186,19 @@ public class Boid : MonoBehaviour
         Gizmos.DrawSphere(transform.position, settings.dstSeparacion);
 
         Gizmos.color = Color.black;
-        Gizmos.DrawLine(transform.position, (direccion + transform.position)*1.3f);
+        Gizmos.DrawLine(transform.position, (direccion + transform.position)*1f);
 
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, r1+transform.position);
+        Vector3 cero = new Vector3(0,0,0);
+        if(r1!=cero)
+            Gizmos.DrawLine(transform.position, r1+transform.position);
 
         Gizmos.color = Color.white;
-        Gizmos.DrawLine(transform.position, r2+transform.position);
+        if(r2!=cero)
+            Gizmos.DrawLine(transform.position, r2+transform.position);
 
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position, (r3+transform.position)*1.1f);
+        if(r3!=cero)
+            Gizmos.DrawLine(transform.position, (r3+transform.position)*1.1f);
     }
 }

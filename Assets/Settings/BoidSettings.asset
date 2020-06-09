@@ -14,12 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minSpeed: 2
   maxSpeed: 8
+  radioPercepcion: 1.5
+  dstSeparacion: 1
   pesoCohesion: 1
   pesoSeparacion: 1
-  pesoAlineacion: 1
+  pesoAlineacion: 0
   pesoEvitarChoque: 50
-  radioPercepcion: 2.5
-  dstSeparacion: 1
+  distanciaEvitarColision: 5
   mascaraObstaculos:
     serializedVersion: 2
     m_Bits: 257

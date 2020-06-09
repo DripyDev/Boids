@@ -11,10 +11,11 @@ public static class BoidHelper {
     //Direcciones del Boid en funcion del GoldenRatio para optimizar las direcciones o algo asi
     static BoidHelper () {
         directions = new Vector3[BoidHelper.numViewDirections];
-
+        //Factor del numero aureo 1.618033989
         float goldenRatio = (1 + Mathf.Sqrt (5)) / 2;
+        //Aumentamos el angulo del rayo en funcion de pi y del numero aureo
         float angleIncrement = Mathf.PI * 2 * goldenRatio;
-
+        //Calculamos el vector del rayo
         for (int i = 0; i < numViewDirections; i++) {
             float t = (float) i / numViewDirections;
             float inclination = Mathf.Acos (1 - 2 * t);
