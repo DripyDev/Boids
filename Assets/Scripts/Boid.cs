@@ -14,6 +14,9 @@ public class Boid : MonoBehaviour
     public int numeroBoids;
     public List<Boid> todosBoids;
     public List<Boid> manada;
+    //RELACIONADO CON LA SUBDIVISION DEL MAPA: (EN DESARROLLO)
+    public List<RegionManager.Region> mapaRegiones;
+    public RegionManager.Region region;
     //Temporal para gizmos
     public Vector3 r1,r2,r3;
     
@@ -27,6 +30,8 @@ public class Boid : MonoBehaviour
         speed = Random.Range(settings.maxSpeed, settings.minSpeed);
         //Velocidad inicial
         velocidad = direccion*speed;
+
+        region = RegionManager.EncontrarRegion(transform.position);
     }
 
     float Distancia(Vector3 destino, Vector3 origen){
@@ -90,6 +95,7 @@ public class Boid : MonoBehaviour
     //por eso settings tiene que ser referencia desde el principio
     // Update is called once per frame
     void Update(){
+        region = RegionManager.EncontrarRegion(transform.position);
         manada = PercibirBoids();
         
         //Las 3 reglas basicas
@@ -200,5 +206,10 @@ public class Boid : MonoBehaviour
         Gizmos.color = Color.green;
         if(r3!=cero)
             Gizmos.DrawLine(transform.position, (r3+transform.position)*1.1f);
+        
+        Color auxRojo = Color.red;
+        auxRojo.a = 0.1f;
+        Gizmos.color = auxRojo;
+        Gizmos.DrawCube(region.posicion, region.dimensiones);
     }
 }

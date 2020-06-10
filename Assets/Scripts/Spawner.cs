@@ -8,6 +8,7 @@ public class Spawner : MonoBehaviour
     public int numeroBoids = 20;
     public int radioSpawner = 5;
     public BoidSettings settings;
+    public RegionManager rM;
 
     void Awake() {
         //Lista de boids
@@ -18,6 +19,8 @@ public class Spawner : MonoBehaviour
             var boid = Instantiate(prefab);
             //boid.transform.position = posRandom;
             boid.Inicializar(settings, posRandom);
+
+            boid.mapaRegiones = RegionManager.mapaRegiones;
 
             boid.transform.position = posRandom;
             boid.transform.forward = Random.insideUnitSphere;
