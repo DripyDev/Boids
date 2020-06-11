@@ -11,12 +11,15 @@ public class Boid : MonoBehaviour
     public float speed;
     ///<summary>Es la direccion(vector3) por la velocidad(float)</summary>
     public Vector3 velocidad;
-    public int numeroBoids;
     public List<Boid> todosBoids;
     public List<Boid> manada;
-    //RELACIONADO CON LA SUBDIVISION DEL MAPA: (EN DESARROLLO)
-    public List<RegionManager.Region> mapaRegiones;
-    public RegionManager.Region region;
+    public List<Boid> boidsRegion;
+
+    ///<summary>Indice de la region en la que esta el Boid actualmente</summary>
+    public int region;
+    public List<int> regionesAdyacentes;
+    ///<summary>Indice de la region anterior donde estaba el Boid. Lo usamos para quitar el Boid de la lista de la region si hemos cambiado de region</summary>
+    public int regionAnterior;
     //Temporal para gizmos
     public Vector3 r1,r2,r3;
     
@@ -30,8 +33,9 @@ public class Boid : MonoBehaviour
         speed = Random.Range(settings.maxSpeed, settings.minSpeed);
         //Velocidad inicial
         velocidad = direccion*speed;
-
+        
         region = RegionManager.EncontrarRegion(transform.position);
+        regionAnterior = region;
     }
 
     float Distancia(Vector3 destino, Vector3 origen){
@@ -39,8 +43,8 @@ public class Boid : MonoBehaviour
         return Mathf.Sqrt(offset.x*offset.x + offset.y*offset.y +offset.z*offset.z);
     }
 
-    //Devuelve una lista con los boids en el rango settings.radioPercepcion de nosotros
-    List<Boid> PercibirBoids(){
+    ///<summary>Devuelve una lista con los boids en el rango settings.radioPercepcion de nosotros. Recorre todos los boids existentes</summary>
+    List<Boid> PercibirBoidsGlobal(){
         List<Boid> manadaAux = new List<Boid>();
         foreach (var b in todosBoids){
             //Vector3 offset = b.transform.position - this.transform.position;
@@ -52,6 +56,37 @@ public class Boid : MonoBehaviour
             }
         }
         return manadaAux;
+    }
+
+    ///<summary>Devuelve una lista con los boids en el rango settings.radioPercepcion de nosotros. Recorre todos los boids de la Region a la que pertenecemos y las adyacentes.</summary>
+    List<Boid> PercibirBoidsRegion(){
+        List<Boid> manadaAux = new List<Boid>();
+        //Percibimos los boids de las regiones nuestra y adyacentes
+        foreach (var indice in regionesAdyacentes){
+            foreach (var b in RegionManager.mapaRegiones[indice].boids){
+                if(b!=this){
+                    float distancia = Distancia(b.transform.position, this.transform.position);
+                    //La segunda condicion es para no contarnos a nosotros mismos
+                    if(distancia < settings.radioPercepcion && distancia > 0){
+                        manadaAux.Add(b);
+                    }
+                    //TEMPORAL PARA COMPROBAR LOS BOIDS QUE DETECTA EN LAS REGIONES SUYA Y ADYACENTES
+                    if(!boidsRegion.Contains(b))
+                        boidsRegion.Add(b);
+                }
+            }
+        }
+        return manadaAux;
+
+        /*List<Boid> manadaAux = new List<Boid>();
+        foreach (var b in RegionManager.mapaRegiones[region].boids){
+            float distancia = Distancia(b.transform.position, this.transform.position);
+            //La segunda condicion es para no contarnos a nosotros mismos
+            if(distancia < settings.radioPercepcion && distancia > 0){
+                manadaAux.Add(b);
+            }
+        }
+        return manadaAux;*/
     }
 
     ///<summary>R1. Devuelve el vector entre nosotros y el centro de la manada</summary>
@@ -95,8 +130,26 @@ public class Boid : MonoBehaviour
     //por eso settings tiene que ser referencia desde el principio
     // Update is called once per frame
     void Update(){
-        region = RegionManager.EncontrarRegion(transform.position);
-        manada = PercibirBoids();
+        //Cambiamos de region
+        if( !RegionManager.DentroDeCubo(this.transform.position, RegionManager.mapaRegiones[region].posicion, RegionManager.mapaRegiones[region].dimensiones) ){
+            //Hemos cambiado de region, nos eliminamos de la lista de boids de esa region
+            RegionManager.EliminarBoidDeRegion(regionAnterior, this);
+
+            //Aqui se deberia de encontrar la region a la que pertenece pero con indice de la region inicial o algo asi.
+            //ahora mismo busca la region de entre las 64 existentes, no es muy eficiente
+            region = RegionManager.EncontrarRegion(transform.position);
+            regionesAdyacentes = RegionManager.RegionesAdyacentes(region);
+
+            RegionManager.AñadirBoidDeRegion(region, this);
+            regionAnterior = region;
+
+            boidsRegion.Clear();
+        }
+        boidsRegion.Clear();
+        //manada = PercibirBoidsGlobal();
+        //De momento solo percibe boids en su misma region, deberia de percibir tambien en regiones adyacentes porque sino al seguir una manada cuando estos cambian
+        //de region, dejamos de seguirlo y funciona mal
+        manada = PercibirBoidsRegion();
         
         //Las 3 reglas basicas
         //Vector3 r1,r2,r3;
@@ -207,9 +260,16 @@ public class Boid : MonoBehaviour
         if(r3!=cero)
             Gizmos.DrawLine(transform.position, (r3+transform.position)*1.1f);
         
-        Color auxRojo = Color.red;
-        auxRojo.a = 0.1f;
+        Color auxRojo = Color.red;Color auxVerde = Color.green;
+        auxRojo.a = 0.1f;auxVerde.a = 0.1f;
+        Gizmos.color = auxVerde;
+        Gizmos.DrawCube(RegionManager.mapaRegiones[region].posicion, RegionManager.mapaRegiones[region].dimensiones);
+
         Gizmos.color = auxRojo;
-        Gizmos.DrawCube(region.posicion, region.dimensiones);
+        foreach (var i in regionesAdyacentes) {
+            Gizmos.DrawCube(RegionManager.mapaRegiones[i].posicion, RegionManager.mapaRegiones[i].dimensiones);
+        }
     }
 }
+//int regionesPorPlanta = numeroRegiones/4;//16
+//int regionesPorFila = regionesPorPlanta/4;//4

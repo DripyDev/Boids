@@ -1792,7 +1792,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sueloMundo: {fileID: 4903976031649198919}
-  numeroRegiones: 64
   X: 0
   Y: 0
   Z: 0

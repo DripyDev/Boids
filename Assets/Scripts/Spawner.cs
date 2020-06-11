@@ -10,7 +10,8 @@ public class Spawner : MonoBehaviour
     public BoidSettings settings;
     public RegionManager rM;
 
-    void Awake() {
+    //void Awake() {
+    void Start() {
         //Lista de boids
         List<Boid> todosBoids = new List<Boid>();
         //Inicializamos los boids
@@ -20,12 +21,9 @@ public class Spawner : MonoBehaviour
             //boid.transform.position = posRandom;
             boid.Inicializar(settings, posRandom);
 
-            boid.mapaRegiones = RegionManager.mapaRegiones;
-
             boid.transform.position = posRandom;
             boid.transform.forward = Random.insideUnitSphere;
 
-            boid.numeroBoids = numeroBoids;
             todosBoids.Add(boid);
         }
         //Añadimos la lista de boids a cada boid para que saquen las distancias
