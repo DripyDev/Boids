@@ -3073,9 +3073,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 8882316981004730667, guid: ec34db22546d96a4891a1a43ce449520, type: 3}
-  numeroBoids: 50
+  prefabDepredador: {fileID: 692584757808031350, guid: 977f6b612d1692841947611a84b81a56,
+    type: 3}
+  numeroBoids: 70
+  numeroDepredadores: 5
   radioSpawner: 5
   settings: {fileID: 11400000, guid: adc9dac9584b09b498cdb21cdb763d17, type: 2}
+  settingsDepredador: {fileID: 11400000, guid: be28c65762f1828418e7897b89cc3ac5, type: 2}
   rM: {fileID: 776752071}
 --- !u!135 &1303904338
 SphereCollider:
@@ -3086,7 +3090,7 @@ SphereCollider:
   m_GameObject: {fileID: 1303904336}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}

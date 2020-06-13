@@ -47,10 +47,12 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\Boid.cs" />
      <Compile Include="Assets\Scripts\BoidHelper.cs" />
-     <Compile Include="Assets\Scripts\BoidSettings.cs" />
-     <Compile Include="Assets\Scripts\CameraController.cs" />
-     <Compile Include="Assets\Scripts\MenuController.cs" />
+     <Compile Include="Assets\Scripts\Camara\CameraController.cs" />
+     <Compile Include="Assets\Scripts\Depredador.cs" />
+     <Compile Include="Assets\Scripts\Menus\MenuController.cs" />
      <Compile Include="Assets\Scripts\RegionManager.cs" />
+     <Compile Include="Assets\Scripts\Settings\BoidSettings.cs" />
+     <Compile Include="Assets\Scripts\Settings\DepredadorSettings.cs" />
      <Compile Include="Assets\Scripts\Spawner.cs" />
  <Reference Include="UnityEngine">
  <HintPath>D:/Program Files/Unity/Unity/2019.3.0f6/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
