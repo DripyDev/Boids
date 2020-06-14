@@ -9,7 +9,7 @@ public class RegionManager : MonoBehaviour
     public GameObject sueloMundo;
     //Se elije la dimension del cubo y al cubo daria el numero de regiones. 512=7x7x7, 64=4x4x4, 216=6x6x6...
     ///<summary>Numero de regiones en las que queremos dividir el mapa.</summary>
-    public static int numeroRegiones = 512;
+    public static int numeroRegiones = 1000;
     ///<summary>Lista de Region donde se controla que boids hay en cada region. Se inicializa aqui y luego cada boid va avisando de donde esta para actualizar.</summary>
     public static List<Region> mapaRegiones = new List<Region>();
 
@@ -105,6 +105,19 @@ public class RegionManager : MonoBehaviour
 
         bool Xin = pos.x >= xMin && pos.x <= xMax; bool Yin = pos.y >= yMin && pos.y <= yMax; bool Zin = pos.z >= zMin && pos.z <= zMax;
         return Xin && Yin && Zin; 
+    }
+
+    ///<summary>Dada la posicion y una lista con las regiones adyacentes, devuelve la nueva region en la que estamos.
+    ///No buscamos entre todas las regiones, asi es mas eficiente.</summary>
+    public static int EncontrarRegionIndices(Vector3 pos, List<int> regionesAdyacentes){
+        foreach (var r in regionesAdyacentes){
+            if(DentroDeCubo(pos, mapaRegiones[r].posicion, mapaRegiones[r].dimensiones)){
+                return r;
+            }
+        }
+        //Si llega aqui es que no funciona o se ha escapado del mapa en cuyo caso nos da igual
+        //ERROR
+        return -1;
     }
 
     ///<summary>Dada una posicion, devuelve el indice de la region del mapa a la que pertenece</summary>
