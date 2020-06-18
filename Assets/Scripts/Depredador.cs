@@ -28,6 +28,10 @@ public class Depredador : MonoBehaviour
     public List<int> regionesAdyacentes;
     ///<summary>Indice de la region anterior donde estaba el Boid. Lo usamos para quitar el Boid de la lista de la region si hemos cambiado de region</summary>
     public int regionAnterior;
+    ///<summary>Tiempo de vuelo. Cuando llega a 1 el boid devera descansar en el suelo</summary>
+    public float tVuelo;
+    ///<summary>Indica si estamos en el suelo descansando o no</summary>
+    public bool descansando = false;
     
     //Inicializamos settings, posicion, direccion, speed, velocidad y region del Boid
     public void Inicializar(DepredadorSettings set, Vector3 pos){
@@ -69,58 +73,89 @@ public class Depredador : MonoBehaviour
         return manadaAux;
     }
 
+    ///<summary>Regla tiempo vuelo. Cuando tVuelo supere un umbral, el boid se dirigira al suelo a descansar.</summary>
+    Vector3 Reglasuelo(){
+        Vector3 suelo = new Vector3(0,0,0);
+        if(!descansando){
+            //Nos movemos hacia el suelo
+            if(tVuelo >= 0.8f){
+                suelo = new Vector3(this.transform.position.x, settings.sueloMundo.transform.position.y, this.transform.position.z);
+                //if(this.transform.position.y == settings.sueloMundo.transform.position.y){
+                if( Distancia(this.transform.position, suelo) <= 0.5f){
+                    descansando = true;
+                    return suelo;
+                }
+                return (suelo - this.transform.position)*50;
+            }
+        }
+        return suelo;
+    }
+
     //NOTA: Como es un update independiente, no sirve inicializar valores porque entra en el update antes de que se llame a Inicializar.
     //por eso settings tiene que ser referencia desde el principio
     void Update(){
         try{
-            //Si cambiamos de region nos eliminamos de la region anterior y nos añadimos a la nueva
-            if( !RegionManager.DentroDeCubo(this.transform.position, RegionManager.mapaRegiones[region].posicion, RegionManager.mapaRegiones[region].dimensiones) ){
-                //Hemos cambiado de region, nos eliminamos de la lista de boids de esa region
-                RegionManager.EliminarDepredadorDeRegion(regionAnterior, this);
+            if(tVuelo>=1f)
+                Destruir();
+            if(descansando){
+                tVuelo-= settings.ratioTiempoDescanso * Time.deltaTime;
+                if (tVuelo<=0.3f)
+                    descansando=false;
+            }
+            else{
+                //Si cambiamos de region nos eliminamos de la region anterior y nos añadimos a la nueva
+                if( !RegionManager.DentroDeCubo(this.transform.position, RegionManager.mapaRegiones[region].posicion, RegionManager.mapaRegiones[region].dimensiones) ){
+                    //Hemos cambiado de region, nos eliminamos de la lista de boids de esa region
+                    RegionManager.EliminarDepredadorDeRegion(regionAnterior, this);
 
-                //NOTA: Aqui se deberia de encontrar la region a la que pertenece pero con indice de la region inicial o algo asi.
-                //ahora mismo busca la region de entre las 64 existentes, no es muy eficiente
-                region = RegionManager.EncontrarRegionIndices(transform.position, regionesAdyacentes);
-                regionesAdyacentes = RegionManager.RegionesAdyacentes(region);
+                    //NOTA: Aqui se deberia de encontrar la region a la que pertenece pero con indice de la region inicial o algo asi.
+                    //ahora mismo busca la region de entre las 64 existentes, no es muy eficiente
+                    region = RegionManager.EncontrarRegionIndices(transform.position, regionesAdyacentes);
+                    regionesAdyacentes = RegionManager.RegionesAdyacentes(region);
 
-                RegionManager.AñadirDepredadorDeRegion(region, this);
-                regionAnterior = region;
+                    RegionManager.AñadirDepredadorDeRegion(region, this);
+                    regionAnterior = region;
 
+                    boidsRegion.Clear();
+                }
                 boidsRegion.Clear();
-            }
-            boidsRegion.Clear();
-            //Percibimos las posibles presas de nuestra region y las adyacentes
-            posiblesPresas = PercibirBoidsRegionDepredador();
 
-            //Regla de ataque
-            presaObjetivo = PresaMasCercana(posiblesPresas);
-            var rA = new Vector3(0,0,0);
-            if(presaObjetivo != null)
-                rA = ReglaAtaque(presaObjetivo);
-            
-            //Regla de colision con objetos
-            Vector3 col = new Vector3(0,0,0);
-            if(Colision()){
-                col =  ObstacleRays () * settings.pesoEvitarChoque;
-            }
-            //print("r1: " + r1 + " r2: " + r2 + " r3: " + r3 + " col: " + col);
-            var aceleracion = (rA + col);
-            velocidad += aceleracion;
-            
-            //Actualizamos las nuevas direccion y velocidad
-            speed = velocidad.magnitude;
-            Vector3 auxDir = velocidad/speed;//Nueva direccion porque hemos aumentado la velocidad
-            //Nueva velocidad
-            speed = Mathf.Clamp (speed, settings.minSpeed, settings.maxSpeed);
-            velocidad = auxDir*speed;
-            direccion = auxDir;
+                tVuelo += settings.ratioTiempovuelo * Time.deltaTime;
+                var rVuelo = new Vector3(0,0,0);
+                rVuelo = Reglasuelo();
+                //Percibimos las posibles presas de nuestra region y las adyacentes
+                posiblesPresas = PercibirBoidsRegionDepredador();
 
-            transform.forward = direccion;
-            transform.position += velocidad * Time.deltaTime;
+                //Regla de ataque
+                presaObjetivo = PresaMasCercana(posiblesPresas);
+                var rA = new Vector3(0,0,0);
+                if(presaObjetivo != null)
+                    rA = ReglaAtaque(presaObjetivo);
+                
+                //Regla de colision con objetos
+                Vector3 col = new Vector3(0,0,0);
+                if(Colision()){
+                    col =  ObstacleRays () * settings.pesoEvitarChoque;
+                }
+                //print("r1: " + r1 + " r2: " + r2 + " r3: " + r3 + " col: " + col);
+                var aceleracion = (rA + col + rVuelo);
+                velocidad += aceleracion;
+                
+                //Actualizamos las nuevas direccion y velocidad
+                speed = velocidad.magnitude;
+                Vector3 auxDir = velocidad/speed;//Nueva direccion porque hemos aumentado la velocidad
+                //Nueva velocidad
+                speed = Mathf.Clamp (speed, settings.minSpeed, settings.maxSpeed);
+                velocidad = auxDir*speed;
+                direccion = auxDir;
 
-            if(presaObjetivo != null){
-                if(Distancia(presaObjetivo.transform.position, this.transform.position) < 0.2f)
-                    presaObjetivo.Destruir();
+                transform.forward = direccion;
+                transform.position += velocidad * Time.deltaTime;
+
+                if(presaObjetivo != null){
+                    if(Distancia(presaObjetivo.transform.position, this.transform.position) < 0.2f)
+                        presaObjetivo.Destruir();
+                }
             }
         }
         catch(ArgumentOutOfRangeException){
@@ -217,5 +252,9 @@ public class Depredador : MonoBehaviour
         foreach (var i in regionesAdyacentes) {
             Gizmos.DrawCube(RegionManager.mapaRegiones[i].posicion, RegionManager.mapaRegiones[i].dimensiones);
         }
+    }
+    public void Destruir(){
+        RegionManager.EliminarDepredadorDeRegion(region, this);
+        Destroy(this.gameObject);
     }
 }

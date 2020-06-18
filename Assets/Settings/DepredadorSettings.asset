@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 759d2938347b35d4aabd89ab7347ffe3, type: 3}
   m_Name: DepredadorSettings
   m_EditorClassIdentifier: 
+  sueloMundo: {fileID: 3000424343644524029, guid: 1ca3fe9cba8c5b4439cc2b7c513eca50,
+    type: 3}
   minSpeed: 3
   maxSpeed: 9
-  radioPercepcion: 5
+  radioPercepcion: 3
   pesoAtaque: 2
   pesoEvitarChoque: 10
+  ratioTiempovuelo: 0.01
+  ratioTiempoDescanso: 0.1
   distanciaEvitarColision: 5
   mascaraObstaculos:
     serializedVersion: 2

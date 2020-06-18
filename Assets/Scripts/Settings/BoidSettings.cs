@@ -6,6 +6,7 @@ using UnityEngine;
 [CreateAssetMenu]
 ///<summary>Valores base de todos los Boids.</summary>
 public class BoidSettings : ScriptableObject {
+    public GameObject sueloMundo;
     public float minSpeed = 2f;
     public float maxSpeed = 8f;
     public float radioPercepcion = 2.5f;
@@ -19,6 +20,8 @@ public class BoidSettings : ScriptableObject {
     public float pesoAlineacion = 1f;
     public float pesoHuirDepredador = 3f;
     public float pesoEvitarChoque = 10f;
+    public float ratioTiempovuelo = 1f/100f;
+    public float ratioTiempoDescanso = 1f/10f;
 
     [Header("Colision")]
     ///<summary>Evitan todo obstaculo que este a esta distancia</summary>

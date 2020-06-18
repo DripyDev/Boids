@@ -73,7 +73,7 @@ public class RegionManager : MonoBehaviour
         foreach (var r in mapaRegiones) {
             Gizmos.DrawCube(r.posicion, r.dimensiones);
             Gizmos.color = color;
-            color += new Color(1f/64f,1f/64f,1f/64f);
+            color += new Color(1f/1000f,1f/1000f,1f/1000f);
             color.a = 0.1f;
             Gizmos.color = color;
         }
@@ -120,6 +120,7 @@ public class RegionManager : MonoBehaviour
         return -1;
     }
 
+    //Usada para encontrar la region inicial en la que estamos
     ///<summary>Dada una posicion, devuelve el indice de la region del mapa a la que pertenece</summary>
     public static int EncontrarRegion(Vector3 pos){
         int indice = 0;
@@ -135,6 +136,7 @@ public class RegionManager : MonoBehaviour
         return -1;
     }
 
+    /*
     ///<summary>Dada una posicion, devuelve el indice de la region cuya posicion sea la misma</summary>
     public static int EncontrarRegionPorPosicion(Vector3 pos){
         int indice = 0;
@@ -167,7 +169,7 @@ public class RegionManager : MonoBehaviour
                 indices.Add(aux[i]);
         }
         return indices;
-    }
+    }*/
 
     //RegionesAdyacentes bueno
     ///<summary>Regiones adyacentes pero con las regiones creadas en un orden concreto. Entonces los adyacentes se pueden calcular con operaciones simples</summary>
