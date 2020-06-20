@@ -3075,12 +3075,13 @@ MonoBehaviour:
   prefab: {fileID: 8882316981004730667, guid: ec34db22546d96a4891a1a43ce449520, type: 3}
   prefabDepredador: {fileID: 692584757808031350, guid: 977f6b612d1692841947611a84b81a56,
     type: 3}
-  numeroBoids: 0
-  numeroDepredadores: 1
+  numeroBoids: 100
+  numeroDepredadores: 0
   radioSpawner: 5
   settings: {fileID: 11400000, guid: adc9dac9584b09b498cdb21cdb763d17, type: 2}
   settingsDepredador: {fileID: 11400000, guid: be28c65762f1828418e7897b89cc3ac5, type: 2}
   rM: {fileID: 776752071}
+  shader: {fileID: 7200000, guid: 8b33003802bc6b043ad116b638970f37, type: 3}
 --- !u!135 &1303904338
 SphereCollider:
   m_ObjectHideFlags: 0

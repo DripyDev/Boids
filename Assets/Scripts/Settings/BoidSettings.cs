@@ -11,7 +11,7 @@ public class BoidSettings : ScriptableObject {
     public float maxSpeed = 8f;
     public float radioPercepcion = 2.5f;
     ///<summary>Distancia de separacion entre boids</summary>
-    public float dstSeparacion = 2.5f;
+    public float dstSeparacion = 1f;
 
     [Header ("Pesos reglas")]
     //Importancia de las 3 reglas base. Cohesion, separacion y alineacion

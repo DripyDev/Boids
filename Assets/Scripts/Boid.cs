@@ -13,6 +13,8 @@ public class Boid : MonoBehaviour {
     public Vector3 velocidad;
     public List<Boid> todosBoids;
     public List<Boid> manada;
+    //TEMPORAL PARA PRUEBAS CON SHADER, BORRAR EN EL FUTURO
+    public int numeroManada;
     public List<Boid> boidsRegion;
 
     public List<Depredador> depredadoresRegion;
@@ -54,20 +56,9 @@ public class Boid : MonoBehaviour {
         return Mathf.Sqrt(vector.x*vector.x + vector.y*vector.y +vector.z*vector.z);
     }
 
-    ///<summary>Devuelve una lista con los boids en el rango settings.radioPercepcion de nosotros.
-    ///Recorre todos los boids existentes asi que es la version menos eficiente.</summary>
-    List<Boid> PercibirBoidsGlobal(){
-        List<Boid> manadaAux = new List<Boid>();
-        foreach (var b in todosBoids){
-            float distancia = Distancia(b.transform.position, this.transform.position);
-            //La segunda condicion es para no contarnos a nosotros mismos
-            if(distancia < settings.radioPercepcion && distancia > 0){
-                manadaAux.Add(b);
-            }
-        }
-        return manadaAux;
-    }
+    //NOTA: IGUAL TODAS LAS FUNCIONES DE PERCIBIR DEBERIAN DE ESTAR EN EL REGION MANAGER?¿?¿?¿?¿?¿?¿
 
+    //PRUEBA PARA USAR LA GPU EN ESTA FUNCION
     ///<summary>Devuelve una lista con los boids en el rango settings.radioPercepcion de nosotros. Recorre todos los boids de la Region a la que pertenecemos y las adyacentes.</summary>
     List<Boid> PercibirBoidsRegion(){
         List<Boid> manadaAux = new List<Boid>();
@@ -104,6 +95,7 @@ public class Boid : MonoBehaviour {
         return depredadoresAux;
     }
 
+    //NOTA: LAS TRES REGLAS PODRIAN COMPARTIR EL FOR DE RECORRER LA MANADA EN UNA UNICA FUNCION, ASI NO LA RECORREMOS CADA VEZ POR REGLA
     ///<summary>R1. Devuelve el vector entre nosotros y el centro de la manada</summary>
     Vector3 Cohesion(List<Boid> manada){
         Vector3 pC = new Vector3(0,0,0);
@@ -183,82 +175,84 @@ public class Boid : MonoBehaviour {
     //NOTA: Como es un update independiente, no sirve inicializar valores porque entra en el update antes de que se llame a Inicializar.
     //por eso settings tiene que ser referencia desde el principio
     void Update(){
-        try {
-            depredadoresRegion = PercibirDepredadoresRegion();
-            depredador = DepredadorCercano(depredadoresRegion);
-            //Si hay un depredador cerca, dejamos de descansar
-            if(depredador!=null)
-                descansando = false;
-            //Nos morimos de cansancio
-            if(tVuelo>=1f)
-                Destruir();
+        if(!Spawner.activarGPU){
+            try {
+                depredadoresRegion = PercibirDepredadoresRegion();
+                depredador = DepredadorCercano(depredadoresRegion);
+                //Si hay un depredador cerca, dejamos de descansar
+                if(depredador!=null)
+                    descansando = false;
+                //Nos morimos de cansancio
+                if(tVuelo>=1f)
+                    Destruir();
 
-            if(descansando){
-                tVuelo-= settings.ratioTiempoDescanso* Time.deltaTime;
-                if (tVuelo<=0.3f)
-                    descansando=false;
-                    //Reseteamos las direcciones etc porque sino cuando vuelve a moverse si guarda la anterior direccion puede que se salga del mapa
-                    //direccion = Vector3.up;
-                    //direccion=cero;
-                    //velocidad = cero;
-                    //speed = 0f;
-            }
-            else{
-                //Si cambiamos de region nos eliminamos de la region anterior y nos añadimos a la nueva
-                if( !RegionManager.DentroDeCubo(this.transform.position, RegionManager.mapaRegiones[region].posicion, RegionManager.mapaRegiones[region].dimensiones) ){
-                    //Hemos cambiado de region, nos eliminamos de la lista de boids de esa region
-                    RegionManager.EliminarBoidDeRegion(regionAnterior, this);
+                if(descansando){
+                    tVuelo-= settings.ratioTiempoDescanso* Time.deltaTime;
+                    if (tVuelo<=0.3f)
+                        descansando=false;
+                        //Reseteamos las direcciones etc porque sino cuando vuelve a moverse si guarda la anterior direccion puede que se salga del mapa
+                        //direccion = Vector3.up;
+                        //direccion=cero;
+                        //velocidad = cero;
+                        //speed = 0f;
+                }
+                else{
+                    //Si cambiamos de region nos eliminamos de la region anterior y nos añadimos a la nueva
+                    if( !RegionManager.DentroDeCubo(this.transform.position, RegionManager.mapaRegiones[region].posicion, RegionManager.mapaRegiones[region].dimensiones) ){
+                        //Hemos cambiado de region, nos eliminamos de la lista de boids de esa region
+                        RegionManager.EliminarBoidDeRegion(regionAnterior, this);
 
-                    //Buscamos la region en la que estamos a partir de las adyacentes
-                    region = RegionManager.EncontrarRegionIndices(transform.position, regionesAdyacentes);
-                    regionesAdyacentes = RegionManager.RegionesAdyacentes(region);
+                        //Buscamos la region en la que estamos a partir de las adyacentes
+                        region = RegionManager.EncontrarRegionIndices(transform.position, regionesAdyacentes);
+                        regionesAdyacentes = RegionManager.RegionesAdyacentes(region);
 
-                    RegionManager.AñadirBoidDeRegion(region, this);
-                    regionAnterior = region;
+                        RegionManager.AñadirBoidDeRegion(region, this);
+                        regionAnterior = region;
 
+                        boidsRegion.Clear();
+                    }
                     boidsRegion.Clear();
+                    tVuelo += settings.ratioTiempovuelo * Time.deltaTime;
+                    //Percibimos los Boids de nuestra region y las adyacentes
+                    manada = PercibirBoidsRegion();
+
+                    
+                    r4 = HuirDepredador(depredador);
+                    r5 = Reglasuelo();
+
+                    //Las 3 reglas basicas
+                    //Vector3 r1,r2,r3;
+                    r1 = Cohesion(manada);//Bien
+                    r2 = Separacion(manada);//Bien
+                    r3 = Alineacion(manada);//Bien
+                    
+                    //Regla de colision con objetos
+                    Vector3 col = new Vector3(0,0,0);
+                    if(Colision()){//NOTA: Lo unico que no colisiona es el centro del boid, por eso a veces parece que atraviesan obscaculos, aunque a veces los atraviesan de verdad
+                        col =  ObstacleRays () * settings.pesoEvitarChoque;
+                    }
+                    //print("r1: " + r1 + " r2: " + r2 + " r3: " + r3 + " col: " + col);
+                    var aceleracion = (r1+r2+r3+col+r4+r5);
+                    velocidad += aceleracion;
+                    
+                    //Actualizamos las nuevas direccion y velocidad
+                    speed = velocidad.magnitude;
+                    Vector3 auxDir = speed > 0? velocidad/speed : velocidad;//Nueva direccion porque hemos aumentado la velocidad
+                    //Nueva velocidad
+                    speed = Mathf.Clamp (speed, settings.minSpeed, settings.maxSpeed);
+                    velocidad = auxDir*speed;
+                    direccion = auxDir;
+
+                    //IMPORTANTE: ESTO ACTUALIZA LOS EJES DEL BOID, SI NO LO ACTUALIZAMOS, EL RAYCASTING NO VA A FUNCIONAR BIEN
+                    transform.forward = direccion==cero? transform.forward : direccion;
+                    transform.position += velocidad * Time.deltaTime;
                 }
-                boidsRegion.Clear();
-                tVuelo += settings.ratioTiempovuelo * Time.deltaTime;
-                //Percibimos los Boids de nuestra region y las adyacentes
-                manada = PercibirBoidsRegion();
-
-                
-                r4 = HuirDepredador(depredador);
-                r5 = Reglasuelo();
-
-                //Las 3 reglas basicas
-                //Vector3 r1,r2,r3;
-                r1 = Cohesion(manada);//Bien
-                r2 = Separacion(manada);//Bien
-                r3 = Alineacion(manada);//Bien
-                
-                //Regla de colision con objetos
-                Vector3 col = new Vector3(0,0,0);
-                if(Colision()){//NOTA: Lo unico que no colisiona es el centro del boid, por eso a veces parece que atraviesan obscaculos, aunque a veces los atraviesan de verdad
-                    col =  ObstacleRays () * settings.pesoEvitarChoque;
-                }
-                //print("r1: " + r1 + " r2: " + r2 + " r3: " + r3 + " col: " + col);
-                var aceleracion = (r1+r2+r3+col+r4+r5);
-                velocidad += aceleracion;
-                
-                //Actualizamos las nuevas direccion y velocidad
-                speed = velocidad.magnitude;
-                Vector3 auxDir = speed > 0? velocidad/speed : velocidad;//Nueva direccion porque hemos aumentado la velocidad
-                //Nueva velocidad
-                speed = Mathf.Clamp (speed, settings.minSpeed, settings.maxSpeed);
-                velocidad = auxDir*speed;
-                direccion = auxDir;
-
-                //IMPORTANTE: ESTO ACTUALIZA LOS EJES DEL BOID, SI NO LO ACTUALIZAMOS, EL RAYCASTING NO VA A FUNCIONAR BIEN
-                transform.forward = direccion==cero? transform.forward : direccion;
-                transform.position += velocidad * Time.deltaTime;
             }
-        }
-        //Si por algun casual nos salimos del mapa, la region va a ser -1 y va a petar. Reseteamos el boid a al primer cubo del mapa de regiones
-        catch(ArgumentOutOfRangeException){
-            print("He petado, nos inicializamos a la primera region del mapa");
-            this.Inicializar(settings, RegionManager.mapaRegiones[0].posicion);
+            //Si por algun casual nos salimos del mapa, la region va a ser -1 y va a petar. Reseteamos el boid a al primer cubo del mapa de regiones
+            catch(ArgumentOutOfRangeException){
+                print("He petado, nos inicializamos a la primera region del mapa");
+                this.Inicializar(settings, RegionManager.mapaRegiones[0].posicion);
+            }
         }
     }
 
@@ -348,6 +342,51 @@ public class Boid : MonoBehaviour {
         foreach (var i in regionesAdyacentes) {
             Gizmos.DrawCube(RegionManager.mapaRegiones[i].posicion, RegionManager.mapaRegiones[i].dimensiones);
         }
+    }
+
+    public void ActualizarBoid(){
+        //Actualizamos la region en la que estamos
+        if( !RegionManager.DentroDeCubo(this.transform.position, RegionManager.mapaRegiones[region].posicion, RegionManager.mapaRegiones[region].dimensiones) ){
+            //Hemos cambiado de region, nos eliminamos de la lista de boids de esa region
+            RegionManager.EliminarBoidDeRegion(regionAnterior, this);
+
+            //Buscamos la region en la que estamos a partir de las adyacentes
+            region = RegionManager.EncontrarRegionIndices(transform.position, regionesAdyacentes);
+            regionesAdyacentes = RegionManager.RegionesAdyacentes(region);
+
+            RegionManager.AñadirBoidDeRegion(region, this);
+            regionAnterior = region;
+
+            boidsRegion.Clear();
+        }
+
+        //Las 3 reglas basicas
+        if(numeroManada > 0){
+            r1 = (r1 - this.transform.position)*settings.pesoCohesion;//Cohesion
+            r2 = r2 * settings.pesoSeparacion;//Separacion
+            r3 = (r3 - this.direccion)*settings.pesoAlineacion;//Alineacion
+        }
+        
+        //Regla de colision con objetos
+        Vector3 col = new Vector3(0,0,0);
+        if(Colision()){//NOTA: Lo unico que no colisiona es el centro del boid, por eso a veces parece que atraviesan obscaculos, aunque a veces los atraviesan de verdad
+            col =  ObstacleRays () * settings.pesoEvitarChoque;
+        }
+        //print("r1: " + r1 + " r2: " + r2 + " r3: " + r3 + " col: " + col);
+        var aceleracion = (r1+r2+r3+col+r4+r5);
+        velocidad += aceleracion;
+        
+        //Actualizamos las nuevas direccion y velocidad
+        speed = velocidad.magnitude;
+        Vector3 auxDir = speed > 0? velocidad/speed : velocidad;//Nueva direccion porque hemos aumentado la velocidad
+        //Nueva velocidad
+        speed = Mathf.Clamp (speed, settings.minSpeed, settings.maxSpeed);
+        velocidad = auxDir*speed;
+        direccion = auxDir;
+
+        //IMPORTANTE: ESTO ACTUALIZA LOS EJES DEL BOID, SI NO LO ACTUALIZAMOS, EL RAYCASTING NO VA A FUNCIONAR BIEN
+        transform.forward = direccion==cero? transform.forward : direccion;
+        transform.position += velocidad * Time.deltaTime;
     }
 
     public void Destruir(){

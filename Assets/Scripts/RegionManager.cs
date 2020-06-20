@@ -32,6 +32,7 @@ public class RegionManager : MonoBehaviour
         InicializarMapaRegiones();
     }
 
+    //Quizas podriamos usar aqui la gpu? Asi las creamos mas rapidamente. No se podria porque los 3 fors son necesarios y no separables
     ///<summary>Divide el mapa en numeroRegiones regiones cubicas</summary>
     void InicializarMapaRegiones(){
         int raizCubo = (int) Mathf.Pow(numeroRegiones, (1f/3f));//64:4 / 216:6
@@ -135,41 +136,6 @@ public class RegionManager : MonoBehaviour
         //ERROR
         return -1;
     }
-
-    /*
-    ///<summary>Dada una posicion, devuelve el indice de la region cuya posicion sea la misma</summary>
-    public static int EncontrarRegionPorPosicion(Vector3 pos){
-        int indice = 0;
-        foreach (var r in mapaRegiones) {
-            if(r.posicion == pos)
-                return indice;
-            indice +=1;
-        }
-        //Error
-        return -1;
-    }
-
-    //Regiones adyacentes viejo e ineficiente. No estamos encontrando las adyacentes con indices, las estamos buscando en el mapa de regiones
-    ///<summary>Dado el indice de una region, devuelve los indices de las regiones adyacentes y la original.</summary>
-    public static List<int> RegionesAdyacentes2(int indiceRegion){
-        List<int> indices = new List<int>();
-
-        int arriba = EncontrarRegionPorPosicion(mapaRegiones[indiceRegion].posicion + new Vector3(0,yR,0));
-        int abajo = EncontrarRegionPorPosicion(mapaRegiones[indiceRegion].posicion - new Vector3(0,yR,0)); 
-
-        int izquierda = EncontrarRegionPorPosicion(mapaRegiones[indiceRegion].posicion + new Vector3(xR, 0, 0)); 
-        int derecha = EncontrarRegionPorPosicion(mapaRegiones[indiceRegion].posicion - new Vector3(xR, 0, 0)); 
-
-        int delante = EncontrarRegionPorPosicion(mapaRegiones[indiceRegion].posicion + new Vector3(0, 0, zR)); 
-        int atras = EncontrarRegionPorPosicion(mapaRegiones[indiceRegion].posicion - new Vector3(0, 0, zR));
-
-        int[] aux = {indiceRegion, arriba, abajo, izquierda, derecha, delante, atras};
-        for (int i = 0; i < 7; i++){
-            if(aux[i] != -1)
-                indices.Add(aux[i]);
-        }
-        return indices;
-    }*/
 
     //RegionesAdyacentes bueno
     ///<summary>Regiones adyacentes pero con las regiones creadas en un orden concreto. Entonces los adyacentes se pueden calcular con operaciones simples</summary>

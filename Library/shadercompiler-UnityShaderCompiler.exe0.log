@@ -1,2 +1,68 @@
 Base path: 'D:/Program Files/Unity/Unity/2019.3.0f6/Editor/Data', plugins path 'D:/Program Files/Unity/Unity/2019.3.0f6/Editor/Data/PlaybackEngines'
 Cmd: initializeCompiler
+Cmd: preprocessCompute
+  insize=1583 outsize=1582 ok=1
+Cmd: compileComputeKernel
+  error: 1 plat 4 at BoidCompute.compute(24): signed/unsigned mismatch, unsigned assumed
+  api=4 insize=1582 outsize=1330 ok=1
+Cmd: preprocessCompute
+  insize=1612 outsize=1611 ok=1
+Cmd: preprocessCompute
+  insize=1667 outsize=1666 ok=1
+Cmd: compileComputeKernel
+  error: 1 plat 4 at BoidCompute.compute(27): signed/unsigned mismatch, unsigned assumed
+  error: 2 plat 4 at BoidCompute.compute(31): syntax error: unexpected token 'vector'
+  error: 2 plat 4 at BoidCompute.compute(32): syntax error: unexpected token '.'
+  error: 2 plat 4 at BoidCompute.compute(43): syntax error: unexpected token '/'
+  api=4 insize=1666 outsize=0 ok=0
+Cmd: preprocessCompute
+  insize=1645 outsize=1644 ok=1
+Cmd: preprocessCompute
+  insize=1798 outsize=1797 ok=1
+Cmd: compileComputeKernel
+  error: 1 plat 4 at BoidCompute.compute(31): signed/unsigned mismatch, unsigned assumed
+  api=4 insize=1797 outsize=1393 ok=1
+Cmd: preprocessCompute
+  insize=1804 outsize=1803 ok=1
+Cmd: preprocessCompute
+  insize=1751 outsize=1750 ok=1
+Cmd: compileComputeKernel
+  error: 1 plat 4 at BoidCompute.compute(32): signed/unsigned mismatch, unsigned assumed
+  error: 2 plat 4 at BoidCompute.compute(48): undeclared identifier 'vec'
+  api=4 insize=1750 outsize=0 ok=0
+Cmd: preprocessCompute
+  insize=1956 outsize=1955 ok=1
+Cmd: compileComputeKernel
+  error: 1 plat 4 at BoidCompute.compute(32): signed/unsigned mismatch, unsigned assumed
+  error: 2 plat 4 at BoidCompute.compute(51): undeclared identifier 'vec'
+  api=4 insize=1955 outsize=0 ok=0
+Cmd: preprocessCompute
+  insize=1958 outsize=1957 ok=1
+Cmd: compileComputeKernel
+  error: 1 plat 4 at BoidCompute.compute(32): signed/unsigned mismatch, unsigned assumed
+  error: 2 plat 4 at BoidCompute.compute(51): undeclared identifier 'vec'
+  api=4 insize=1957 outsize=0 ok=0
+Cmd: preprocessCompute
+  insize=1962 outsize=1961 ok=1
+Cmd: compileComputeKernel
+  error: 1 plat 4 at BoidCompute.compute(32): signed/unsigned mismatch, unsigned assumed
+  error: 2 plat 4 at BoidCompute.compute(51): undeclared identifier 'vec'
+  api=4 insize=1961 outsize=0 ok=0
+Cmd: preprocessCompute
+  insize=1802 outsize=1801 ok=1
+Cmd: compileComputeKernel
+  error: 1 plat 4 at BoidCompute.compute(27): signed/unsigned mismatch, unsigned assumed
+  error: 2 plat 4 at BoidCompute.compute(46): undeclared identifier 'vec'
+  api=4 insize=1801 outsize=0 ok=0
+Cmd: preprocessCompute
+  insize=1805 outsize=1804 ok=1
+Cmd: preprocessCompute
+  insize=1785 outsize=1784 ok=1
+Cmd: compileComputeKernel
+  error: 1 plat 4 at BoidCompute.compute(32): signed/unsigned mismatch, unsigned assumed
+  api=4 insize=1784 outsize=1461 ok=1
+Cmd: preprocessCompute
+  insize=1721 outsize=1720 ok=1
+Cmd: compileComputeKernel
+  error: 1 plat 4 at BoidCompute.compute(32): signed/unsigned mismatch, unsigned assumed
+  api=4 insize=1720 outsize=1461 ok=1
