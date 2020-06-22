@@ -192,13 +192,18 @@ MonoBehaviour:
   velocidad: {x: 0, y: 0, z: 0}
   todosBoids: []
   manada: []
+  numeroManada: 0
   boidsRegion: []
   depredadoresRegion: []
   depredador: {fileID: 0}
   region: 0
   regionesAdyacentes: 
   regionAnterior: 0
+  tVuelo: 0
+  descansando: 0
   r1: {x: 0, y: 0, z: 0}
   r2: {x: 0, y: 0, z: 0}
   r3: {x: 0, y: 0, z: 0}
   r4: {x: 0, y: 0, z: 0}
+  r5: {x: 0, y: 0, z: 0}
+  spawner: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159, type: 3}

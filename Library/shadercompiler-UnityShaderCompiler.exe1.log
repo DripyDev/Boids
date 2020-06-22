@@ -1,11 +1,8 @@
 Base path: 'D:/Program Files/Unity/Unity/2019.3.0f6/Editor/Data', plugins path 'D:/Program Files/Unity/Unity/2019.3.0f6/Editor/Data/PlaybackEngines'
 Cmd: initializeCompiler
 Cmd: compileComputeKernel
-  error: 1 plat 4 at BoidCompute.compute(26): signed/unsigned mismatch, unsigned assumed
-  api=4 insize=1611 outsize=1330 ok=1
+  error: 1 plat 4 at BoidCompute.compute(43): signed/unsigned mismatch, unsigned assumed
+  api=4 insize=1974 outsize=1461 ok=1
 Cmd: compileComputeKernel
-  error: 1 plat 4 at BoidCompute.compute(31): signed/unsigned mismatch, unsigned assumed
-  api=4 insize=1803 outsize=1413 ok=1
-Cmd: compileComputeKernel
-  error: 1 plat 4 at BoidCompute.compute(27): signed/unsigned mismatch, unsigned assumed
-  api=4 insize=1804 outsize=1393 ok=1
+  error: 1 plat 4 at BoidCompute.compute(50): signed/unsigned mismatch, unsigned assumed
+  api=4 insize=2106 outsize=1461 ok=1

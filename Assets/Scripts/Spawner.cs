@@ -15,9 +15,9 @@ public class Spawner : MonoBehaviour
     
     //GPU
     ///<summary>Indica si vamos a usar la gpu o no</summary>
-    public static bool activarGPU = false;
+    public static bool activarGPU = true;
     public ComputeShader shader;
-    private List<Boid> todosBoids = new List<Boid>();
+    public List<Boid> todosBoids = new List<Boid>();
     private List<Depredador> todosDepredadores = new List<Depredador>();
 
     //void Awake() {
@@ -58,20 +58,32 @@ public class Spawner : MonoBehaviour
     void Update() {
         if(activarGPU){
             if (todosBoids.Count > 0) {
-                var datosBoid = new DatosBoid[todosBoids.Count];
+                DatosBoid[] datosBoid = new DatosBoid[todosBoids.Count];
                 for(int i=0; i<todosBoids.Count; i++) {
-                    datosBoid[i].position = todosBoids[i].transform.position;
-                    datosBoid[i].direccion = todosBoids[i].direccion;
-                    datosBoid[i].velocidad = todosBoids[i].velocidad;
+                    if(todosBoids[i]!=null)
+                        datosBoid[i] = new DatosBoid(todosBoids[i]);
                 }
+                DatosDepredador[] datosDepredador = new DatosDepredador[numeroDepredadores];
+                for(int i=0; i<todosDepredadores.Count; i++) {
+                    datosDepredador[i] = new DatosDepredador(todosDepredadores[i]);
+                }
+
                 //Especificamos el numero de buffers y su tamaño para poder usarlo en el shader
                 var boidBuffer = new ComputeBuffer(todosBoids.Count, DatosBoid.Size);
+                var depredadorBuffer = new ComputeBuffer(todosDepredadores.Count, DatosDepredador.Size);
+                
+                //Parametros boids
                 boidBuffer.SetData(datosBoid);
-
                 shader.SetBuffer(0, "boids", boidBuffer);
                 shader.SetInt("numeroBoids", todosBoids.Count);
                 shader.SetFloat("radioVision", settings.radioPercepcion);
                 shader.SetFloat("distanciaSeparacion", settings.dstSeparacion);
+
+                //Paraetros depredadores
+                depredadorBuffer.SetData(datosDepredador);
+                shader.SetBuffer(0, "depredadores", depredadorBuffer);
+                shader.SetInt("numeroDepredadores", numeroDepredadores);
+                shader.SetFloat("radioVisionDepredador", settingsDepredador.radioPercepcion);
 
                 int threadGroups = Mathf.CeilToInt (todosBoids.Count / (float) 1024);
                 //Numero de threads que va a usar el shader
@@ -87,6 +99,8 @@ public class Spawner : MonoBehaviour
                     todosBoids[i].r2 = datosBoid[i].separacion;
                     //Alineacion
                     todosBoids[i].r3 = datosBoid[i].numeroBoidsManada <= 0? new Vector3(0,0,0) :  datosBoid[i].direccionManada / datosBoid[i].numeroBoidsManada;
+                    //Huir de depredador
+                    todosBoids[i].r4 = datosBoid[i].huirDepredador;
 
                     //Boids percibidos. La manada actual
                     todosBoids[i].numeroManada = datosBoid[i].numeroBoidsManada;
@@ -94,6 +108,7 @@ public class Spawner : MonoBehaviour
                     todosBoids[i].ActualizarBoid();
                 }
                 boidBuffer.Release ();
+                depredadorBuffer.Release ();
             }
         }
     }
@@ -109,17 +124,57 @@ public class Spawner : MonoBehaviour
         public Vector3 centroManada;
         public Vector3 separacion;
         public Vector3 direccionManada;
+        public Vector3 huirDepredador;
         
-        //public Depredador dep;
         public int numeroBoidsManada;
-        //public int region;
+        public int region;
+        //Necesitamos determinar un tamaño para usar gpu, asi que instanciamos al maximo posible de elementos que puede tener
         //public int[] regionesAdyacentes;
+
+        //Va a ser el numero de elementos validos de regionesAdyacentes, el resto no se tendran en cuenta
+        //public static int numeroRegionesValidas;
         //NOTA: El tamaño va en funcion del numero de floats y ints de la estructura. 1Vector3 = sizeof (float)*3, por ejemplo
         public static int Size {
             get {
-                //6 vector3 son 3x6 floats y 1 int
-                return sizeof (float) * 3 * 6 + sizeof (int);
+                //6 vector3 son 3x6 floats. 3 ints y un array con numeroRegionesValidas ints
+                return sizeof (float) * 3 * 7 + sizeof (int) * (2);
             }
+        }
+        //Constructora
+        public DatosBoid(Boid boid){
+            position = boid.transform.position;
+            direccion = boid.direccion;
+            velocidad = boid.velocidad;
+
+            centroManada = new Vector3(0,0,0);
+            separacion = new Vector3(0,0,0);
+            direccionManada = new Vector3(0,0,0);
+            huirDepredador = new Vector3(0,0,0);
+            
+            numeroBoidsManada = 0;
+            region = boid.region;
+            //regionesAdyacentes = new int[numeroRegiones];
+        }
+    }
+    public struct DatosDepredador {
+        public Vector3 position;
+        public Vector3 direccion;
+        public Vector3 velocidad;
+
+        //Reglas basicas
+        public Vector3 presa;
+        public static int Size {
+            get {
+                //6 vector3 son 3x6 floats. 3 ints y un array con numeroRegionesValidas ints
+                return sizeof (float) * 3 * 4;
+            }
+        }
+        //Constructora
+        public DatosDepredador(Depredador dep){
+            position = dep.transform.position;
+            direccion = dep.direccion;
+            velocidad = dep.velocidad;
+            presa = new Vector3(0,0,0);
         }
     }
 }
