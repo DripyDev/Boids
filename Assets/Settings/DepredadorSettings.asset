@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sueloMundo: {fileID: 3000424343644524029, guid: 1ca3fe9cba8c5b4439cc2b7c513eca50,
     type: 3}
-  minSpeed: 2.5
-  maxSpeed: 8.5
+  minSpeed: 2
+  maxSpeed: 8
   radioPercepcion: 2
   pesoAtaque: 2
   pesoEvitarChoque: 10

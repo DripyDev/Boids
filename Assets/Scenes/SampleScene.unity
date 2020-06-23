@@ -6562,6 +6562,21 @@ PrefabInstance:
       propertyPath: numeroDepredadores
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159,
+        type: 3}
+      propertyPath: shaderBoid
+      value: 
+      objectReference: {fileID: 7200000, guid: 8b33003802bc6b043ad116b638970f37, type: 3}
+    - target: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159,
+        type: 3}
+      propertyPath: shaderDepredador
+      value: 
+      objectReference: {fileID: 7200000, guid: e8ab536de19eadb48bf0fda71ab14043, type: 3}
+    - target: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159,
+        type: 3}
+      propertyPath: numeroBoids
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 9145054190277188357, guid: f9716b6cbd1136249bb79412752b8159,
         type: 3}
       propertyPath: m_Name

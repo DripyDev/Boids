@@ -1,5 +1,4 @@
 Base path: 'D:/Program Files/Unity/Unity/2019.3.0f6/Editor/Data', plugins path 'D:/Program Files/Unity/Unity/2019.3.0f6/Editor/Data/PlaybackEngines'
 Cmd: initializeCompiler
 Cmd: compileComputeKernel
-  error: 1 plat 4 at BoidCompute.compute(49): signed/unsigned mismatch, unsigned assumed
-  api=4 insize=2092 outsize=1461 ok=1
+  api=4 insize=1736 outsize=992 ok=1

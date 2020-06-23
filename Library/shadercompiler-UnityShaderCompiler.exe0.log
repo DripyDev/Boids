@@ -1,54 +1,21 @@
 Base path: 'D:/Program Files/Unity/Unity/2019.3.0f6/Editor/Data', plugins path 'D:/Program Files/Unity/Unity/2019.3.0f6/Editor/Data/PlaybackEngines'
 Cmd: initializeCompiler
 Cmd: preprocessCompute
-  insize=1938 outsize=1937 ok=1
+  insize=421 outsize=420 ok=1
+Cmd: preprocessCompute
+  insize=1619 outsize=1618 ok=1
 Cmd: compileComputeKernel
-  error: 2 plat 4 at BoidCompute.compute(16): syntax error: unexpected token '['
-  api=4 insize=1937 outsize=0 ok=0
+  error: 2 plat 4 at DepredadorCompute.compute(48): if statement conditional expressions must evaluate to a scalar
+  api=4 insize=1618 outsize=0 ok=0
 Cmd: preprocessCompute
-  insize=1956 outsize=1955 ok=1
+  insize=1622 outsize=1621 ok=1
+Cmd: preprocessCompute
+  insize=1762 outsize=1761 ok=1
 Cmd: compileComputeKernel
-  error: 2 plat 4 at BoidCompute.compute(29): syntax error: unexpected token '['
-  api=4 insize=1955 outsize=0 ok=0
+  api=4 insize=1761 outsize=992 ok=1
 Cmd: preprocessCompute
-  insize=1958 outsize=1957 ok=1
+  insize=1737 outsize=1736 ok=1
+Cmd: preprocessCompute
+  insize=1820 outsize=1819 ok=1
 Cmd: compileComputeKernel
-  error: 2 plat 4 at BoidCompute.compute(29): syntax error: unexpected token '['
-  api=4 insize=1957 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=1958 outsize=1957 ok=1
-Cmd: compileComputeKernel
-  error: 1 plat 4 at BoidCompute.compute(42): signed/unsigned mismatch, unsigned assumed
-  api=4 insize=1957 outsize=1461 ok=1
-Cmd: preprocessCompute
-  insize=1960 outsize=1959 ok=1
-Cmd: compileComputeKernel
-  error: 1 plat 4 at BoidCompute.compute(42): signed/unsigned mismatch, unsigned assumed
-  api=4 insize=1959 outsize=1461 ok=1
-Cmd: preprocessCompute
-  insize=1958 outsize=1957 ok=1
-Cmd: compileComputeKernel
-  error: 1 plat 4 at BoidCompute.compute(42): signed/unsigned mismatch, unsigned assumed
-  api=4 insize=1957 outsize=1461 ok=1
-Cmd: preprocessCompute
-  insize=1975 outsize=1974 ok=1
-Cmd: preprocessCompute
-  insize=1974 outsize=1973 ok=1
-Cmd: compileComputeKernel
-  error: 1 plat 4 at BoidCompute.compute(43): signed/unsigned mismatch, unsigned assumed
-  api=4 insize=1973 outsize=1461 ok=1
-Cmd: preprocessCompute
-  insize=2107 outsize=2106 ok=1
-Cmd: preprocessCompute
-  insize=2093 outsize=2092 ok=1
-Cmd: preprocessCompute
-  insize=2326 outsize=2325 ok=1
-Cmd: compileComputeKernel
-  error: 1 plat 4 at BoidCompute.compute(48): signed/unsigned mismatch, unsigned assumed
-  error: 2 plat 4 at BoidCompute.compute(70): undeclared identifier 'boid'
-  api=4 insize=2325 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=2327 outsize=2326 ok=1
-Cmd: compileComputeKernel
-  error: 1 plat 4 at BoidCompute.compute(48): signed/unsigned mismatch, unsigned assumed
-  api=4 insize=2326 outsize=1999 ok=1
+  api=4 insize=1819 outsize=992 ok=1

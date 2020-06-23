@@ -16,9 +16,13 @@ public class Spawner : MonoBehaviour
     //GPU
     ///<summary>Indica si vamos a usar la gpu o no</summary>
     public static bool activarGPU = true;
-    public ComputeShader shader;
+    public ComputeShader shaderBoid;
+    public ComputeShader shaderDepredador;
     public List<Boid> todosBoids = new List<Boid>();
     private List<Depredador> todosDepredadores = new List<Depredador>();
+
+    private DatosBoid[] datosBoid;
+    private DatosDepredador[] datosDepredador;
 
     //void Awake() {
     void Start() {
@@ -54,44 +58,62 @@ public class Spawner : MonoBehaviour
         }
     }
 
+    void EstablecerDatosShaderBoid(){
+        datosBoid = new DatosBoid[todosBoids.Count];
+        for(int i=0; i<todosBoids.Count; i++) {
+            if(todosBoids[i]!=null)//Para evitar los boids destruidos
+                datosBoid[i] = new DatosBoid(todosBoids[i]);
+        }
+        datosDepredador = new DatosDepredador[numeroDepredadores];
+        for(int i=0; i<todosDepredadores.Count; i++) {
+            datosDepredador[i] = new DatosDepredador(todosDepredadores[i]);
+        }
+
+        //Especificamos el numero de buffers y su tamaño para poder usarlo en el shaderBoid
+        var boidBuffer = new ComputeBuffer(todosBoids.Count, DatosBoid.Size);
+        var depredadorBuffer = new ComputeBuffer(todosDepredadores.Count, DatosDepredador.Size);
+        
+        //SHADER BOID
+        //Parametros boids
+        boidBuffer.SetData(datosBoid);
+        shaderBoid.SetBuffer(0, "boids", boidBuffer);
+        shaderBoid.SetInt("numeroBoids", todosBoids.Count);
+        shaderBoid.SetFloat("radioVision", settings.radioPercepcion);
+        shaderBoid.SetFloat("distanciaSeparacion", settings.dstSeparacion);
+        //Paraetros depredadores
+        depredadorBuffer.SetData(datosDepredador);
+        shaderBoid.SetBuffer(0, "depredadores", depredadorBuffer);
+        shaderBoid.SetInt("numeroDepredadores", numeroDepredadores);
+        shaderBoid.SetFloat("radioVisionDepredador", settingsDepredador.radioPercepcion);
+
+        //SHADER DEPREDADOR
+        //Datos boids
+        shaderDepredador.SetBuffer(0, "boids", boidBuffer);
+        shaderDepredador.SetInt("numeroBoids", todosBoids.Count);
+        //Datos depredador
+        shaderDepredador.SetBuffer(0, "depredadores", depredadorBuffer);
+        shaderDepredador.SetFloat("radioVisionDepredador", settingsDepredador.radioPercepcion);
+
+        int threadGroupsBoid = Mathf.CeilToInt (todosBoids.Count / (float) 1024);
+        int threadGroupsDepredador = Mathf.CeilToInt (todosDepredadores.Count / (float) 1024);
+        //Numero de threads que va a usar el shaderBoid
+        shaderBoid.Dispatch (0, threadGroupsBoid, 1, 1);
+        shaderDepredador.Dispatch (0, threadGroupsDepredador, 1, 1);
+
+        //Procesamos los datos en la gpu que nos va a calcular: Numero de boids cercanos,
+        //direccion de manada, centro manada y si deberiamos de separarnos de alguien
+        boidBuffer.GetData (datosBoid);
+        depredadorBuffer.GetData(datosDepredador);
+        //No estoy seguro de que sea correcto liberar aqui los buffer. En pincipio no deberia de haber problema porque ya tenemos la informacion que queremos en datosBoid
+        boidBuffer.Release ();
+        depredadorBuffer.Release ();
+    }
+
     //Solo se llamara si activamos la gpu
     void Update() {
         if(activarGPU){
             if (todosBoids.Count > 0) {
-                DatosBoid[] datosBoid = new DatosBoid[todosBoids.Count];
-                for(int i=0; i<todosBoids.Count; i++) {
-                    if(todosBoids[i]!=null)
-                        datosBoid[i] = new DatosBoid(todosBoids[i]);
-                }
-                DatosDepredador[] datosDepredador = new DatosDepredador[numeroDepredadores];
-                for(int i=0; i<todosDepredadores.Count; i++) {
-                    datosDepredador[i] = new DatosDepredador(todosDepredadores[i]);
-                }
-
-                //Especificamos el numero de buffers y su tamaño para poder usarlo en el shader
-                var boidBuffer = new ComputeBuffer(todosBoids.Count, DatosBoid.Size);
-                var depredadorBuffer = new ComputeBuffer(todosDepredadores.Count, DatosDepredador.Size);
-                
-                //Parametros boids
-                boidBuffer.SetData(datosBoid);
-                shader.SetBuffer(0, "boids", boidBuffer);
-                shader.SetInt("numeroBoids", todosBoids.Count);
-                shader.SetFloat("radioVision", settings.radioPercepcion);
-                shader.SetFloat("distanciaSeparacion", settings.dstSeparacion);
-
-                //Paraetros depredadores
-                depredadorBuffer.SetData(datosDepredador);
-                shader.SetBuffer(0, "depredadores", depredadorBuffer);
-                shader.SetInt("numeroDepredadores", numeroDepredadores);
-                shader.SetFloat("radioVisionDepredador", settingsDepredador.radioPercepcion);
-
-                int threadGroups = Mathf.CeilToInt (todosBoids.Count / (float) 1024);
-                //Numero de threads que va a usar el shader
-                shader.Dispatch (0, threadGroups, 1, 1);
-                //Procesamos los datos en la gpu que nos va a calcular: Numero de boids cercanos,
-                //direccion de manada, centro manada y si deberiamos de separarnos de alguien
-                boidBuffer.GetData (datosBoid);
-
+                EstablecerDatosShaderBoid();
                 for (int i = 0; i < todosBoids.Count; i++) {
                     //Cohesion
                     todosBoids[i].r1 = datosBoid[i].numeroBoidsManada <= 0? new Vector3(0,0,0) : datosBoid[i].centroManada / datosBoid[i].numeroBoidsManada;
@@ -107,13 +129,17 @@ public class Spawner : MonoBehaviour
                     //Movemos el boid y actualizamos sus datos
                     todosBoids[i].ActualizarBoid();
                 }
-                boidBuffer.Release ();
-                depredadorBuffer.Release ();
+                for (int i = 0; i < todosDepredadores.Count; i++) {
+                    todosDepredadores[i].rA = datosDepredador[i].presa;
+                    todosDepredadores[i].ActualizarDepredador();
+                }
+                //boidBuffer.Release ();
+                //depredadorBuffer.Release ();
             }
         }
     }
 
-    //NOTA: Esta estructura es la que va a adoptar la estructura boid del shader. Los parametros tienen que estar en el mismo orden
+    //NOTA: Esta estructura es la que va a adoptar la estructura boid del shaderBoid. Los parametros tienen que estar en el mismo orden
     //Prueba con parametros basicos, sin regiones
     public struct DatosBoid {
         public Vector3 position;

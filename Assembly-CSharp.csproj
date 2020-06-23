@@ -54,6 +54,7 @@
      <Compile Include="Assets\Scripts\Settings\BoidSettings.cs" />
      <Compile Include="Assets\Scripts\Settings\DepredadorSettings.cs" />
      <Compile Include="Assets\Scripts\Spawner.cs" />
+     <None Include="Assets\Scripts\DepredadorCompute.compute" />
      <None Include="Assets\Scripts\BoidCompute.compute" />
  <Reference Include="UnityEngine">
  <HintPath>D:/Program Files/Unity/Unity/2019.3.0f6/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
