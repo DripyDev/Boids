@@ -12,8 +12,6 @@ struct Boid {
     float3 huirDepredador;
 
     int numeroBoidsManada;
-    //No se pueden definir arrays en hlsl, pero si desde script
-    int region;
 };
 struct Depredador {
     float3 position;

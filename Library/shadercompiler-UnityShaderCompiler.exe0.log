@@ -1,21 +1,2 @@
 Base path: 'D:/Program Files/Unity/Unity/2019.3.0f6/Editor/Data', plugins path 'D:/Program Files/Unity/Unity/2019.3.0f6/Editor/Data/PlaybackEngines'
 Cmd: initializeCompiler
-Cmd: preprocessCompute
-  insize=421 outsize=420 ok=1
-Cmd: preprocessCompute
-  insize=1619 outsize=1618 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at DepredadorCompute.compute(48): if statement conditional expressions must evaluate to a scalar
-  api=4 insize=1618 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=1622 outsize=1621 ok=1
-Cmd: preprocessCompute
-  insize=1762 outsize=1761 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=1761 outsize=992 ok=1
-Cmd: preprocessCompute
-  insize=1737 outsize=1736 ok=1
-Cmd: preprocessCompute
-  insize=1820 outsize=1819 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=1819 outsize=992 ok=1
