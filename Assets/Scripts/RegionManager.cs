@@ -9,7 +9,7 @@ public class RegionManager : MonoBehaviour
     public GameObject sueloMundo;
     //Se elije la dimension del cubo y al cubo daria el numero de regiones. 512=7x7x7, 64=4x4x4, 216=6x6x6...
     ///<summary>Numero de regiones en las que queremos dividir el mapa.</summary>
-    public static int numeroRegiones = 1000;
+    public static int numeroRegiones = 3375;
     ///<summary>Lista de Region donde se controla que boids hay en cada region. Se inicializa aqui y luego cada boid va avisando de donde esta para actualizar.</summary>
     public static List<Region> mapaRegiones = new List<Region>();
 

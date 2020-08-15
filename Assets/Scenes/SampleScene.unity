@@ -6560,7 +6560,7 @@ PrefabInstance:
     - target: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159,
         type: 3}
       propertyPath: numeroDepredadores
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159,
         type: 3}
@@ -6575,7 +6575,7 @@ PrefabInstance:
     - target: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159,
         type: 3}
       propertyPath: numeroBoids
-      value: 100
+      value: 1500
       objectReference: {fileID: 0}
     - target: {fileID: 9145054190277188357, guid: f9716b6cbd1136249bb79412752b8159,
         type: 3}
