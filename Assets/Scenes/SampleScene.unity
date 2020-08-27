@@ -6560,7 +6560,7 @@ PrefabInstance:
     - target: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159,
         type: 3}
       propertyPath: numeroDepredadores
-      value: 10
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159,
         type: 3}
@@ -6575,7 +6575,36 @@ PrefabInstance:
     - target: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159,
         type: 3}
       propertyPath: numeroBoids
-      value: 1500
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159,
+        type: 3}
+      propertyPath: prefab
+      value: 
+      objectReference: {fileID: 8882316981004730667, guid: ec34db22546d96a4891a1a43ce449520,
+        type: 3}
+    - target: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159,
+        type: 3}
+      propertyPath: prefabDepredador
+      value: 
+      objectReference: {fileID: 692584757808031350, guid: 977f6b612d1692841947611a84b81a56,
+        type: 3}
+    - target: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159,
+        type: 3}
+      propertyPath: settings
+      value: 
+      objectReference: {fileID: 11400000, guid: 9faa536b12868a54c81dd3a3cc3af59e,
+        type: 2}
+    - target: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159,
+        type: 3}
+      propertyPath: settingsDepredador
+      value: 
+      objectReference: {fileID: 11400000, guid: be28c65762f1828418e7897b89cc3ac5,
+        type: 2}
+    - target: {fileID: 9145054190277188356, guid: f9716b6cbd1136249bb79412752b8159,
+        type: 3}
+      propertyPath: radioSpawner
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 9145054190277188357, guid: f9716b6cbd1136249bb79412752b8159,
         type: 3}

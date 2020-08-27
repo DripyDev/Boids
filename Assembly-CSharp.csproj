@@ -46,7 +46,7 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Boid.cs" />
-     <Compile Include="Assets\Scripts\BoidHelper.cs" />
+     <Compile Include="Assets\Scripts\BoidHelper2.cs" />
      <Compile Include="Assets\Scripts\Camara\CameraController.cs" />
      <Compile Include="Assets\Scripts\Depredador.cs" />
      <Compile Include="Assets\Scripts\Menus\MenuController.cs" />
