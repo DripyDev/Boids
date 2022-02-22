@@ -1,5 +1,5 @@
 # Boids
-Implementacion aparte de los conocidos Boids de Craig Reynolds. El objetivo es simular un comportamiento de manada con una serie de reglas básicas a 
+Implementacion independiente de los conocidos Boids de Craig Reynolds. El objetivo es simular un comportamiento de manada con una serie de reglas básicas a 
 partir de las cuales se obtiene un comportamiento en grupo complejo.
 
 El proyecto está dividido en tres secciones: **Reglas básicas de comportamiento**, **Evitado de obstáculos** y **Optimización**.
